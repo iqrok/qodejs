@@ -1,6 +1,7 @@
 #include "node.h"
 #include "env-inl.h"
 #include "debug_utils-inl.h"
+#include "qode_shared.h"
 
 using v8::Context;
 using v8::Global;
@@ -33,7 +34,10 @@ Maybe<int> SpinEventLoop(Environment* env) {
         node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_START);
     do {
       if (env->is_stopping()) break;
-      uv_run(env->event_loop(), UV_RUN_DEFAULT);
+      if (env->event_loop() == uv_default_loop() && qode::qode_run_gui_loop)
+        qode::qode_run_gui_loop();
+      else
+        uv_run(env->event_loop(), UV_RUN_DEFAULT);
       if (env->is_stopping()) break;
 
       platform->DrainTasks(isolate);

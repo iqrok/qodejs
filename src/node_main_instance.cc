@@ -7,6 +7,8 @@
 #include "node_snapshotable.h"
 #include "node_v8_platform-inl.h"
 #include "util-inl.h"
+#include "qode_shared.h"
+
 #if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>
 #endif
@@ -204,6 +206,9 @@ NodeMainInstance::CreateMainEnvironment(int* exit_code,
 #if HAVE_INSPECTOR
     env->InitializeInspector({});
 #endif
+    if (qode::qode_init) {
+      qode::qode_init(env.get());
+    }
     env->DoneBootstrapping();
   } else {
     context = NewContext(isolate_);
