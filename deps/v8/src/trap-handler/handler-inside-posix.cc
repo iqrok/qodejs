@@ -108,6 +108,8 @@ bool TryHandleSignal(int signum, siginfo_t* info, void* context) {
     ucontext_t* uc = reinterpret_cast<ucontext_t*>(context);
 #if V8_OS_LINUX && V8_TARGET_ARCH_X64
     auto* context_ip = &uc->uc_mcontext.gregs[REG_RIP];
+#elif V8_OS_MACOSX && V8_TARGET_ARCH_ARM64 && V8_HOST_ARCH_X64
+    auto* context_ip = &uc->uc_mcontext->__ss.__rip;
 #elif V8_OS_MACOSX && V8_TARGET_ARCH_ARM64
     auto* context_ip = &uc->uc_mcontext->__ss.__pc;
 #elif V8_OS_MACOSX && V8_TARGET_ARCH_X64

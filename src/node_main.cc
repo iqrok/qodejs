@@ -20,6 +20,7 @@
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "node.h"
+#include "qode/qode.h"
 #include <cstdio>
 
 #ifdef _WIN32
@@ -84,7 +85,7 @@ int wmain(int argc, wchar_t* wargv[]) {
   }
   argv[argc] = nullptr;
   // Now that conversion is done, we can finally start.
-  return node::Start(argc, argv);
+  return qode::Start(argc, argv);
 }
 #else
 // UNIX
@@ -124,6 +125,6 @@ int main(int argc, char* argv[]) {
   // calls elsewhere in the program (e.g., any logging from V8.)
   setvbuf(stdout, nullptr, _IONBF, 0);
   setvbuf(stderr, nullptr, _IONBF, 0);
-  return node::Start(argc, argv);
+  return qode::Start(argc, argv);
 }
 #endif

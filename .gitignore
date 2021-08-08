@@ -21,6 +21,7 @@
 !.nycrc
 !.eslintrc.yaml
 !.cpplint
+!.travis.yml
 
 # === Rules for root dir ===
 /core

@@ -387,7 +387,8 @@
       ],
 
       'includes': [
-        'node.gypi'
+        'node.gypi',
+        'qode/qode.gypi',
       ],
 
       'include_dirs': [
@@ -460,7 +461,7 @@
               ],
             }],
             [ 'OS=="win"', {
-              'sources': [ 'src/res/node.rc' ],
+              # 'sources': [ 'src/res/node.rc' ],
               'conditions': [
                 [ 'node_use_etw=="true"', {
                   'sources': [
@@ -481,6 +482,7 @@
             'Dbghelp.lib',
             'winmm.lib',
             'Ws2_32.lib',
+            'Shlwapi.lib',
           ],
         }],
         ['node_with_ltcg=="true"', {
@@ -580,6 +582,7 @@
 
       'include_dirs': [
         'src',
+        '.',
         '<(SHARED_INTERMEDIATE_DIR)' # for node_natives.h
       ],
       'dependencies': [
@@ -588,6 +591,7 @@
       ],
 
       'sources': [
+        'qode/qode_shared.cc',
         'src/api/async_resource.cc',
         'src/api/callback.cc',
         'src/api/embed_helpers.cc',
@@ -855,9 +859,9 @@
         [ 'OS=="win"', {
           'conditions': [
             [ 'node_intermediate_lib_type!="static_library"', {
-              'sources': [
-                'src/res/node.rc',
-              ],
+              # 'sources': [
+              #   'src/res/node.rc',
+              # ],
             }],
           ],
           'libraries': [
