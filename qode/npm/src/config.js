@@ -20,7 +20,9 @@ const gitTagVersion = `v${libVersion}-qode`;
 
 const qodePath = path.resolve(extractDir, executableNames[platform]);
 const downloadArchiveName = `${gitTagVersion}-${platform}-${arch}.tar.gz`;
-const downloadLink = `https://github.com/nodegui/qodejs/releases/download/${gitTagVersion}/${downloadArchiveName}`;
+const downloadLink =
+  process.env.QODE_MIRROR ||
+  `https://github.com/nodegui/qodejs/releases/download/${gitTagVersion}/${downloadArchiveName}`;
 
 module.exports = {
   downloadLink,

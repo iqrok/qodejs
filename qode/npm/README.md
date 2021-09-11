@@ -24,6 +24,22 @@ or
 npm install @nodegui/qode
 ```
 
+### Dowload mirrors
+
+By default qode is downloaded using the github releases at
+
+```js
+`https://github.com/nodegui/qodejs/releases/download/v${libVersion}-qode/${gitTagVersion}-${platform}-${arch}.tar.gz`
+```
+
+if you need to specify an alternative download path you can set the environment variable `QODE_MIRROR` like so and run npm install
+
+```
+QODE_MIRROR=https://github.com/nodegui/qodejs/releases/download/v1.2-qode/1.2-linux-x64.tar.gz npm install @nodegui/qodejs
+```
+
+If it doesnt download make sure to clear the cached qode at https://github.com/nodegui/qodejs/blob/89ccb29fe3c9d66426311a95369c47820bca4de5/qode/npm/src/config.js#L29
+
 # Version Table:
 
 | Qode        | Node    | Qt                 |
