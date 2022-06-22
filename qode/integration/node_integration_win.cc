@@ -4,6 +4,7 @@
 
 #include "qode/integration/node_integration_win.h"
 #include "uv/src/uv-common.h"
+#include <stdio.h>
 
 // http://blogs.msdn.com/oldnewthing/archive/2004/10/25/247180.aspx
 extern "C" IMAGE_DOS_HEADER __ImageBase;
@@ -70,7 +71,11 @@ void NodeIntegrationWin::PostTask(const std::function<void()>& task) {
   ::EnterCriticalSection(&lock_);
   tasks_[++task_id_] = task;
   ::LeaveCriticalSection(&lock_);
-  ::PostMessage(message_window_, WM_USER, task_id_, 0L);
+  BOOL result = ::PostMessage(message_window_, WM_USER, task_id_, 0L);
+  if (result == 0) {
+    int lastError = ::GetLastError();
+    fprintf(stderr, "Qode: PostMessage() failed! LastError=%d\n", lastError);
+  }
 }
 
 void NodeIntegrationWin::OnTask(int id) {

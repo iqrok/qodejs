@@ -63,9 +63,6 @@ void NodeIntegration::UvRunOnce() {
 
   // Deal with uv events.
   uv_run(uv_loop_, UV_RUN_NOWAIT);
-
-  // Tell the worker thread to continue polling.
-  uv_sem_post(&embed_sem_);
 }
 
 void NodeIntegration::CallNextTick() {
@@ -79,6 +76,8 @@ void NodeIntegration::ReleaseHandleRef() {
 void NodeIntegration::WakeupMainThread() {
   PostTask([this] {
     this->UvRunOnce();
+    // Tell the worker thread to continue polling.
+    uv_sem_post(&this->embed_sem_);
   });
 }
 
@@ -91,8 +90,6 @@ void NodeIntegration::EmbedThreadRunner(void *arg) {
   NodeIntegration* self = static_cast<NodeIntegration*>(arg);
 
   while (true) {
-    // Wait for the main loop to deal with events.
-    uv_sem_wait(&self->embed_sem_);
     if (self->embed_closed_)
       break;
 
@@ -113,6 +110,9 @@ void NodeIntegration::EmbedThreadRunner(void *arg) {
 
     // Deal with event in main thread.
     self->WakeupMainThread();
+
+    // Wait for the main loop to deal with events.
+    uv_sem_wait(&self->embed_sem_);
   }
 }
 
