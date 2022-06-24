@@ -20,7 +20,7 @@ NodeIntegration::NodeIntegration()
 }
 
 constexpr uint64_t EVENT_BATCH_TIMEOUT_MS = 8;
-constexpr int EVENT_BATCH_SIZE = 64;
+constexpr int EVENT_BATCH_SIZE = 16;
 
 NodeIntegration::~NodeIntegration() {
   // Quit the embed thread.
