@@ -19,6 +19,9 @@ NodeIntegration::NodeIntegration()
       embed_closed_(false) {
 }
 
+constexpr uint64_t EVENT_BATCH_TIMEOUT_MS = 8;
+constexpr int EVENT_BATCH_SIZE = 16;
+
 NodeIntegration::~NodeIntegration() {
   // Quit the embed thread.
   embed_closed_ = true;
@@ -63,9 +66,6 @@ void NodeIntegration::UvRunOnce() {
 
   // Deal with uv events.
   uv_run(uv_loop_, UV_RUN_NOWAIT);
-
-  // Tell the worker thread to continue polling.
-  uv_sem_post(&embed_sem_);
 }
 
 void NodeIntegration::CallNextTick() {
@@ -79,6 +79,19 @@ void NodeIntegration::ReleaseHandleRef() {
 void NodeIntegration::WakeupMainThread() {
   PostTask([this] {
     this->UvRunOnce();
+    // ^ This also updates the uv_now() timestamp.
+    uint64_t start_time_ms = uv_now(uv_loop_);
+
+    int loop_count = EVENT_BATCH_SIZE;
+    uint64_t elapsed_ms = 0;
+    while (loop_count != 0 && (elapsed_ms < EVENT_BATCH_TIMEOUT_MS)) {
+      loop_count--;
+      this->UvRunOnce();
+      elapsed_ms = uv_now(uv_loop_) - start_time_ms;
+    }
+
+    // Tell the worker thread to continue polling.
+    uv_sem_post(&this->embed_sem_);
   });
 }
 
@@ -91,8 +104,6 @@ void NodeIntegration::EmbedThreadRunner(void *arg) {
   NodeIntegration* self = static_cast<NodeIntegration*>(arg);
 
   while (true) {
-    // Wait for the main loop to deal with events.
-    uv_sem_wait(&self->embed_sem_);
     if (self->embed_closed_)
       break;
 
@@ -113,6 +124,9 @@ void NodeIntegration::EmbedThreadRunner(void *arg) {
 
     // Deal with event in main thread.
     self->WakeupMainThread();
+
+    // Wait for the main loop to deal with events.
+    uv_sem_wait(&self->embed_sem_);
   }
 }
 
