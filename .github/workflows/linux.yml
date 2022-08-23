@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix: 
-        arch: ['x64']
+        arch: ['x64', 'arm64', 'armhf']
     steps:
       - uses: actions/setup-node@master
         with:
